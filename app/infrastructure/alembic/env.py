@@ -1,22 +1,20 @@
-import os
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+from app.core.models.base import CoreBase
 from app.infrastructure.config import Settings
-from app.infrastructure.database import Base, get_connection_url
-from app.tests.ioc.dependencies import MockSettings
+from app.infrastructure.database import get_connection_url
 
 config = context.config
-# TODO: Temporary decision.
-settings = Settings() if os.environ.get("PYTEST_VERSION") is None else MockSettings() # type: ignore [reportCallIssue]
+settings = Settings()
 config.set_main_option("sqlalchemy.url", f"{get_connection_url(settings)}?async_fallback=True")
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = Base.metadata
+target_metadata = [CoreBase.metadata]
 
 
 def run_migrations_offline() -> None:

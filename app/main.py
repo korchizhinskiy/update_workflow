@@ -1,5 +1,7 @@
 from fastapi.applications import FastAPI
 
+from app.core.api.routers import router as core_router
+from app.infrastructure.exception_handler import setup_exception_handlers
 from app.infrastructure.ioc.dependencies import init_di
 from app.infrastructure.log_config import configure_logging
 
@@ -10,3 +12,6 @@ app = FastAPI(swagger_ui_parameters={"persistAuthorization": True})
 init_di(app)
 
 configure_logging()
+
+app.include_router(core_router)
+setup_exception_handlers(app)
